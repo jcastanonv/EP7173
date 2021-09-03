@@ -8,7 +8,7 @@ library(tidymodels)
 
 # Lectura de datos --------------------------------------------------------
 
-read_csv("01 - vacunas_febrero.csv") -> datos
+read_csv("01 - vacunas_febrero.csv") -> datos 
 
 datos$SEXO |> levels()
 
@@ -19,7 +19,7 @@ datos$SEXO |> levels()
 
 datos |> 
   mutate(SEXO1 = recode_factor(SEXO, 
-                               MASCULINO = "MASC", FEMENINO = "FEME")) |> 
+                               MASCULINO = "MASC", FEMENINO = "FEME"))|> 
   relocate(SEXO1, .after = SEXO) -> datos1
 
 
@@ -75,14 +75,11 @@ trainControl(method = "cv", # cross validation
              savePredictions = "all",
              classProbs = TRUE) -> caret_control
 
-# train(..., trControl = caret_control, ...)
+#train(..., trControl = caret_control, ...)
 
 set.seed(333)
 datos$SEXO |> createDataPartition(p = 0.8, list = FALSE, times = 5) -> caret_train2
-caret_train2[,1]
 set.seed(333)
-
-
 
 trainControl(method  = "repeatedcv", # cross validation
              number  = 10, # número de folds
@@ -108,8 +105,4 @@ tidy_test |> count(SEXO) |> mutate(Porc = n/sum(n))
 
 
 
-
-
-folds1 <- createMultiFolds(y = mtcars$am, k = 5, times = 1)
-table(unlist(folds1))
 
