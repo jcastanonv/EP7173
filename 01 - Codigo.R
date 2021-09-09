@@ -5,6 +5,7 @@ library(readr)
 library(caret)
 library(dplyr)
 library(tidymodels)
+library(purrr)
 
 # Lectura de datos --------------------------------------------------------
 

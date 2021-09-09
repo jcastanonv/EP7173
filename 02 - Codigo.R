@@ -24,22 +24,31 @@ datos_estudiantes |>
 datos_estudiantes |> 
   full_join(datos_distritos) -> datos_full
 
+datos_estudiantes[datos_estudiantes$DISTRITO=="CARMEN DE LA LEGUA REYNOSO",]$DISTRITO = "CARMEN DE LA LEGUA-REYNOSO"
+
+datos_estudiantes |> 
+  left_join(datos_distritos) -> datos_left
+
 read_excel('02 - integracion.xlsx', range = "ZONAS2!B2:C45") -> datos_distritos2
 
 datos_estudiantes |> 
   inner_join(datos_distritos2) -> datos_integrados2
 
 datos_estudiantes |> 
-  inner_join(datos_distritos2, by = c("DISTRITO"="Distritos")) -> d_int2
+  inner_join(datos_distritos2, 
+             by = c("DISTRITO"="Distritos")) -> d_int2
 
 datos_estudiantes |> 
-  full_join(datos_distritos2, by = c("DISTRITO"="Distritos")) -> d_full2
+  full_join(datos_distritos2, 
+            by = c("DISTRITO"="Distritos")) -> d_full2
 
 datos_estudiantes |> 
-  left_join(datos_distritos2, by = c("DISTRITO"="Distritos")) -> d_left2
+  left_join(datos_distritos2, 
+            by = c("DISTRITO"="Distritos")) -> d_left2
 
 datos_estudiantes |> 
-  right_join(datos_distritos2, by = c("DISTRITO"="Distritos")) -> d_right2
+  right_join(datos_distritos2,
+             by = c("DISTRITO"="Distritos")) -> d_right2
 
 # Resolucion de la pregunta
 
@@ -59,8 +68,10 @@ datos_estudiantes |>
 table(datos_integrados$FACULTAD,datos_integrados$ZONA)
 
 chisq.test(datos_integrados$ZONA,datos_integrados$FACULTAD) -> prueba_chi
-prueba_chi
+prueba_chi #H0: independencia #H1: No independencia (asociación)
 prueba_chi$expected
+
+datos_integrados |> sample_n(10) # muestra aleatoria
 
 library(writexl)
 write_xlsx(x = datos_integrados, path = "02 - transformacion.xlsx")
