@@ -78,16 +78,15 @@ trainControl(method = "cv", # cross validation
 #train(..., trControl = caret_control, ...)
 
 set.seed(333)
-datos$SEXO |> createDataPartition(p = 0.8, list = FALSE, times = 5) -> caret_train2
-set.seed(333)
+datos$SEXO |> createDataPartition(p = 0.8, list = FALSE, times = 5) -> caret_train2 # subindices
 
 trainControl(method  = "repeatedcv", # cross validation
              number  = 10, # número de folds
-             repeats = 4,
+             repeats = 5,
              savePredictions = "all",
-             classProbs = TRUE)
+             classProbs = TRUE) -> caret_control
 
-# train(..., trControl = caret_control, ...)
+#train(..., trControl = caret_control, ...)
 
 # Particionamiento usando tidymodels --------------------------------------
 
@@ -101,8 +100,26 @@ tidy_test |> dim()
 tidy_train |> count(SEXO) |> mutate(Porc = n/sum(n))
 tidy_test |> count(SEXO) |> mutate(Porc = n/sum(n))
 
+tidy_train |> vfold_cv(v = 10, repeats = 1, strata = SEXO) -> folds
+folds
+folds$id
+folds$splits
 
+map_dbl(folds$splits,
+        function(x) {
+          dat <- as.data.frame(x)$SEXO
+          mean(dat == "MASCULINO")
+        })
 
+datos |> vfold_cv(v = 10, repeats = 2, strata = SEXO) -> folds_rep2
+folds_rep2
+folds_rep2$id
+folds_rep2$splits
 
+map_dbl(folds_rep2$splits,
+        function(x) {
+          dat <- as.data.frame(x)$SEXO
+          mean(dat == "MASCULINO")
+        })
 
-
+datos$SEXO |> table() |> prop.table()
