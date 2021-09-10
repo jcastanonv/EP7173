@@ -156,14 +156,19 @@ write.csv(datos_transformado, '02 - normalizacion.csv')
 
 # Normalizacion -----------------------------------------------------------
 
-read_csv('02 - normalizacion.csv', locale = locale(encoding = "latin1")) -> datos_normalizacion
+read_csv('02 - normalizacion.csv', 
+         locale = locale(encoding = "latin1")) -> datos_normalizacion
 
-datos_normalizacion |> mutate(NOTA2 = NOTA |> scale())
+datos_normalizacion |> mutate(NOTA2 = NOTA |> scale()) -> datos_normalizados
 
-normalize <- function(x, na.rm = TRUE) {
+datos_normalizados$NOTA2 |> hist()
+
+minmax <- function(x, na.rm = TRUE) {
   return((x- min(x)) /(max(x)-min(x)))}
 
-datos_normalizacion |> mutate(NOTA2 = NOTA |> normalize()) -> datos_reduccion
+datos_normalizacion |> mutate(NOTA2 = NOTA |> minmax()) -> datos_reduccion
+
+datos_reduccion$NOTA2 |> hist()
 
 # Reduccion ---------------------------------------------------------------
 
