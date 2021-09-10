@@ -170,6 +170,30 @@ datos_normalizacion |> mutate(NOTA2 = NOTA |> minmax()) -> datos_reduccion
 
 datos_reduccion$NOTA2 |> hist()
 
+datos_reduccion$FACULTAD |> table()
+
+# Limpieza ----------------------------------------------------------------
+
+library(skimr)
+
+datos_reduccion |> skim()
+
+datos_reduccion[datos_reduccion$FACULTAD=="Meteorología",]$FACULTAD = "Ciencias"
+
+datos_reduccion |> skim()
+
+datos_reduccion |> 
+  filter(FACULTAD=="Ciencias" & EDAD %in% c(20,21))
+
+datos_reduccion |> 
+  filter(FACULTAD=="Zootecnia" & EDAD >=18 & EDAD < 24)
+
+datos_reduccion |> 
+  filter(FACULTAD=="Ciencias" | EDAD %in% c(20,21))
+
+datos_reduccion |> 
+  filter(FNAC >= as.Date("2000-01-01"))
+
 # Reduccion ---------------------------------------------------------------
 
 datos_reduccion |> 
