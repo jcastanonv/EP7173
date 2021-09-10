@@ -56,7 +56,7 @@ library(fs)
 library(purrr)
 
 dir_ls('02 - datos integracion', regexp = "\\.xlsx$") |> 
-  map(read_xlsx) -> DATOS
+  purrr::map(read_xlsx) -> DATOS
 
 DATOS[[1]] -> datos_carreras
 DATOS[[2]] -> datos_estudiantes
@@ -154,6 +154,8 @@ datos_transformado |> mutate_if(is.numeric,log)
 
 write.csv(datos_transformado, '02 - normalizacion.csv')
 
+write.csv(datos_transformado, '02 - normalizacion_A.csv', row.names = FALSE)
+
 # Normalizacion -----------------------------------------------------------
 
 read_csv('02 - normalizacion.csv', 
@@ -197,8 +199,9 @@ datos_reduccion |>
 # Reduccion ---------------------------------------------------------------
 
 datos_reduccion |> 
-  select(-'...1',-NOMBRE,-APELLIDO1,-APELLIDO2,-FNAC,-NOTA,-NOTA1,-EDAD) |> 
-  select(`NOMBRE COMPLETO`, DISTRITO, ZONA_CENTRO, ZONA_ESTE, ZONA_NORTE, ZONA_SUR, RANGO_EDAD,CARRERA,FACULTAD,NOTA2)-> datos_final
+  select(-...1,-NOMBRE,-APELLIDO1,-APELLIDO2,-FNAC,-NOTA,-NOTA1,-EDAD) |> 
+  select(`NOMBRE COMPLETO`, DISTRITO, ZONA_CENTRO, ZONA_ESTE, ZONA_NORTE, ZONA_SUR, 
+         RANGO_EDAD,CARRERA,FACULTAD,NOTA2)-> datos_final
 
 datos_reduccion |> 
   select_if(is.numeric) |> 
