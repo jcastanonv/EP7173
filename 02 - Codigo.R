@@ -71,7 +71,7 @@ chisq.test(datos_integrados$ZONA,datos_integrados$FACULTAD) -> prueba_chi
 prueba_chi #H0: independencia #H1: No independencia (asociación)
 prueba_chi$expected
 
-datos_integrados |> sample_n(10) # muestra aleatoria
+datos_integrados |> sample_n(100) # muestra aleatoria
 
 library(writexl)
 write_xlsx(x = datos_integrados, path = "02 - transformacion.xlsx")
@@ -95,7 +95,10 @@ library(readr)
 datos_transformacion |> 
   mutate('NOMBRE COMPLETO'=paste(NOMBRE,APELLIDO1,APELLIDO2)) |> 
   mutate(FNAC = as.Date(FNAC)) |> 
-  mutate(EDAD = ((today()-FNAC)/365) |> ceiling()  |> as.numeric()) -> datos_transformado
+  mutate(EDAD = ((today()-FNAC)/365) |> floor() |> as.numeric()) -> datos_transformado
+
+datos_transformado$`NOMBRE COMPLETO`
+datos_transformado$NOMBRE
 
 datos_transformado$NOTA |> hist()
 datos_transformado$NOTA |> shapiro.test()
@@ -105,11 +108,17 @@ datos_transformado$NOTA |> powerTransform() -> trans_bc
 trans_bc$lambda
 
 bcPower(datos_transformado$NOTA,trans_bc$lambda) |> hist()
-
 bcPower(datos_transformado$NOTA,trans_bc$lambda) |> shapiro.test()
 
 datos_transformado |> 
   mutate(NOTA1 = bcPower(NOTA,trans_bc$lambda)) -> datos_transformado
+
+set.seed(230) 
+x = rnorm(1000,5,1) 
+x11();par(mfrow=c(1,3)) 
+x|> hist() 
+x |> log() |> hist() 
+x**2 |> hist()
 
 X11();par(mfrow=c(1,3))
 datos_transformado$NOTA |> hist()
@@ -117,7 +126,7 @@ datos_transformado$NOTA |> log() |> hist()
 datos_transformado$NOTA**2 |> hist()
 
 datos_transformado |> 
-  mutate(RANGO_EDAD = cut(EDAD, breaks = c(-Inf,11,17,29,59,Inf),
+  mutate(RANGO_EDAD = cut(EDAD, breaks = c(0,11,17,29,59,120),
                           labels = c("Niño","Adolescente","Joven","Adulto","Adulto mayor"))) -> datos_transformado
 
 datos_transformacion |> 
@@ -137,7 +146,11 @@ datos_transformado |>
 
 datos_transformado |> transmute_if(is.character,toupper)
 
+datos_transformado |> transmute_if(is.numeric,log)
+
 datos_transformado |> transmute_at(c("NOMBRE","APELLIDO1"),toupper)
+
+datos_transformado |> mutate_if(is.numeric,log)
 
 write.csv(datos_transformado, '02 - normalizacion.csv')
 
